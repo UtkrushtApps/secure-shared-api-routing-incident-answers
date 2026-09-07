@@ -103,6 +103,6 @@ kubectl get pods -A
 
 echo ""
 echo "Kubernetes Dashboard access:"
-echo "  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard 8443:443"
-echo "  Open the sandbox browser for forwarded port 8443."
+echo "  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard 9443:443"
+echo "  Open the sandbox browser for forwarded port 9443."
 echo "  Login token is written to: ${TOKEN_FILE}"

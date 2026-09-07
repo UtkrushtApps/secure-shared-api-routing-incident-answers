@@ -30,8 +30,8 @@ kubectl get pods -A
 
 echo ""
 echo "Dashboard access:"
-echo "  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard 8443:443"
-echo "  Open the sandbox browser for forwarded port 8443."
+echo "  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard 9443:443"
+echo "  Open the sandbox browser for forwarded port 9443."
 echo "  Login token file: ${ROOT_DIR}/cluster/dashboard-token.txt"
 
 echo ""
