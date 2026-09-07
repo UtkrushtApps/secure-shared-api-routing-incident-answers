@@ -53,6 +53,10 @@ docker build -t api2-local:latest "${ROOT_DIR}/api2" >/dev/null
 "${K3D_CMD}" image import api1-local:latest api2-local:latest -c "${CLUSTER_NAME}" >/dev/null
 
 echo "Installing ingress-nginx"
+# The upstream "kind" provider manifest schedules the controller only onto
+# nodes labeled ingress-ready=true -- kind sets this itself, k3d does not,
+# so it must be applied explicitly or the controller pod stays Pending forever.
+kubectl label node "k3d-${CLUSTER_NAME}-server-0" ingress-ready=true --overwrite >/dev/null
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/kind/deploy.yaml >/dev/null
 kubectl -n ingress-nginx wait --for=condition=Ready pod -l app.kubernetes.io/component=controller --timeout=180s
 
