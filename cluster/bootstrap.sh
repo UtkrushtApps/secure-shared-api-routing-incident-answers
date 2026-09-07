@@ -31,11 +31,6 @@ if ! "${K3D_CMD}" cluster list -o json | grep -q "\"name\":\"${CLUSTER_NAME}\"";
     --wait \
     --timeout 120s \
     --k3s-arg "--disable=traefik@server:0"
-
-  if docker ps --format '{{.Names}}' | grep -q "^k3d-${CLUSTER_NAME}-server-0$"; then
-    docker update --cpus "2.0" --memory "3g" "k3d-${CLUSTER_NAME}-server-0" >/dev/null
-    docker restart "k3d-${CLUSTER_NAME}-server-0" >/dev/null
-  fi
 else
   echo "Using existing k3d cluster ${CLUSTER_NAME}"
 fi
@@ -107,4 +102,3 @@ echo "Kubernetes Dashboard access:"
 echo "  kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard 8443:443"
 echo "  Open the sandbox browser for forwarded port 8443."
 echo "  Login token is written to: ${TOKEN_FILE}"
-
