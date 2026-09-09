@@ -8,9 +8,10 @@
 
 4. Confirm both api deployments can roll out cleanly: `kubectl -n api1 rollout status deployment/api1 --timeout=90s` and `kubectl -n api2 rollout status deployment/api2 --timeout=120s`. Ensure api2 reaches all replicas and pods are Ready.
 
-5. Check single-node capacity constraints using the declared resource requests in the manifests: sum requests for api1 (1 replica) and api2 (2 replicas) and compare with node allocatable (`kubectl get nodes -o json` → `status.allocatable`). If CPU is over capacity, reduce only `resources.requests.cpu` in the manifests (keep behavior stable) so both services fit.
+5. Check single-node capacity constraints using the declared resource requests in the manifests: sum requests for api1 (1 replica) and api2 (2 replicas) and compare with node allocatable (`kubectl get nodes -o json` → `status.allocatable`). If CPU is over capacity, reduce only `resources.requests.cpu` in the manifests (keep behavior stable) so both services fit. On the 2-CPU node the system pods hold about 300m and api2's two replicas 1000m, so api1 must request at most 700m; 1000m leaves it Pending.
 
 6. Re-apply the updated deployment manifests for api1/api2 (`kubectl apply -f ...`) and wait for readiness again using rollout status and `kubectl -n api2 get pods`.
 
-7. Validate the secure shared routing: port-forward ingress-nginx and curl both shared paths using the required Host header (e.g. `https://api.utkrusht.local/api1/health` and `/api2/health`). Confirm HTTP 200 for both.
+7. Create the TLS material the shared entry point references: generate a self-signed certificate for `api.utkrusht.local` (`openssl req -x509 -nodes -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=api.utkrusht.local"`) and load it as `kubectl -n edge create secret tls shared-api-tls --cert=tls.crt --key=tls.key` (or apply `manifests/edge/tls-secret.yaml`). The Ingress already references `shared-api-tls`; without the Secret the controller serves its default certificate.
+8. Validate the secure shared routing: port-forward ingress-nginx and curl both shared paths using the required Host header (e.g. `https://api.utkrusht.local/api1/health` and `/api2/health`). Confirm HTTP 200 for both.
 
