@@ -8,7 +8,7 @@
 
 4. Confirm both api deployments can roll out cleanly: `kubectl -n api1 rollout status deployment/api1 --timeout=90s` and `kubectl -n api2 rollout status deployment/api2 --timeout=120s`. Ensure api2 reaches all replicas and pods are Ready.
 
-5. Check single-node capacity constraints using the declared resource requests in the manifests: sum requests for api1 (1 replica) and api2 (2 replicas) and compare with node allocatable (`kubectl get nodes -o json` → `status.allocatable`). If CPU is over capacity, reduce only `resources.requests.cpu` in the manifests (keep behavior stable) so both services fit. On the 2-CPU node the system pods hold about 300m and api2's two replicas 1000m, so api1 must request at most 700m; 1000m leaves it Pending.
+5. Check single-node capacity constraints using the declared resource requests in the manifests: sum requests for api1 (1 replica) and api2 (2 replicas) and compare with node allocatable (`kubectl get nodes -o json` → `status.allocatable`). If CPU is over capacity, reduce only `resources.requests.cpu` in the manifests (keep behavior stable) so both services fit. On the 2-CPU node the system pods hold about 300m and api2's two replicas 1000m, so api1 must request at most 700m; 1000m leaves it Pending. Leave api2's requests as they are: changing its pod spec forces a rollout, and on a full node the replacement pod cannot be scheduled while the old ones still hold their CPU.
 
 6. Re-apply the updated deployment manifests for api1/api2 (`kubectl apply -f ...`) and wait for readiness again using rollout status and `kubectl -n api2 get pods`.
 

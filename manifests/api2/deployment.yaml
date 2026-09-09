@@ -29,7 +29,7 @@ spec:
                   key: API_MESSAGE
           resources:
             requests:
-              cpu: "350m"
+              cpu: "500m"
               memory: "384Mi"
             limits:
               cpu: "700m"
